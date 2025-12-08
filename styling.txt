@@ -1,0 +1,9 @@
+These are the instrcutions for every .md to pdf conversion
+
+1. Add borders to all pages
+2. use various text colors bolds italics underlines etc for proper differentitaion and levelling.
+3. proper tabularisation
+4. lists should be better organised
+5. proper segmentation of content
+6. headlines should pop out for easier navigation
+7. proper text wrapping and borders and boxes etc for good formatting and a tabular and modular view

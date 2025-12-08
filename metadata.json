@@ -1,0 +1,5 @@
+{
+  "name": "MarkFlow AI",
+  "description": "A professional Markdown to PDF converter with AI-assisted styling, theme detection, and content polishing using Google Gemini 2.5 Flash.",
+  "requestFramePermissions": []
+}
