@@ -1,24 +1,39 @@
-# MarkFlow AI - Markdown to PDF Converter
+# MarkFlow - Markdown to PDF Converter
 
-A powerful web application that converts Markdown files into beautifully styled, print-ready PDFs with AI-assisted theming and styling.
+A sleek, responsive web application that converts Markdown content into beautifully styled, print-ready PDFs.
+
+🌐 **Live Demo**: [markflow.vercel.app](https://markflow.vercel.app)
 
 ## Features
 
 ✨ **Core Features**
-- Upload or paste Markdown content
-- Real-time preview with A4 paper simulation
-- Export to downloadable PDF
-- YAML front-matter support (title, author, theme)
+- Write or paste Markdown content with real-time preview
+- Upload existing `.md`, `.markdown`, or `.txt` files
+- Export to high-quality downloadable PDF
+- Auto-format button to clean up markdown formatting
+- YAML front-matter support for document metadata
 
-🎨 **Themes**
-- **Clean Notes** - Modern, readable format with good spacing
-- **Technical Report** - Academic style with numbered headings
-- **Modern Resume** - Professional layout for CVs
+🎨 **Professional Styling**
+- Clean, modern design with custom color palette
+- Well-defined tables with solid borders
+- Properly styled headings, lists, code blocks, and blockquotes
+- Syntax highlighting for code blocks
 
-🤖 **AI Features** (requires Gemini API key)
-- Auto-detect best theme based on content
-- Natural language style adjustments ("make headings blue")
-- Content polishing and grammar improvements
+📱 **Responsive Design**
+- Fully responsive - works on desktop, tablet, and mobile
+- Resizable split pane (drag to adjust editor/preview ratio)
+- Mobile view toggle between Editor and Preview modes
+- Touch-friendly interface
+
+## Color Palette
+
+| Color | Hex | Usage |
+|-------|-----|-------|
+| Rich Black | `#0A0908` | Text, borders |
+| Dark Slate | `#22333B` | Headers, toolbar |
+| Off White | `#F2F4F3` | Backgrounds |
+| Tan | `#A9927D` | Accents, highlights |
+| Brown | `#5E503F` | Secondary accents |
 
 ## Getting Started
 
@@ -30,8 +45,8 @@ A powerful web application that converts Markdown files into beautifully styled,
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/markflow-ai.git
-   cd markflow-ai
+   git clone https://github.com/NobleChicken97/markflow.git
+   cd markflow
    ```
 
 2. Install dependencies:
@@ -39,20 +54,12 @@ A powerful web application that converts Markdown files into beautifully styled,
    npm install
    ```
 
-3. (Optional) Configure AI features:
-   - Copy `.env.example` to `.env.local`
-   - Add your Gemini API key:
-     ```
-     VITE_GEMINI_API_KEY=your_api_key_here
-     ```
-   - Get your API key from: https://makersuite.google.com/app/apikey
-
-4. Start the development server:
+3. Start the development server:
    ```bash
    npm run dev
    ```
 
-5. Open http://localhost:3000 in your browser
+4. Open http://localhost:3000 in your browser
 
 ## Deployment to Vercel
 
@@ -60,9 +67,13 @@ A powerful web application that converts Markdown files into beautifully styled,
 
 1. Push your code to GitHub
 2. Import the project in [Vercel](https://vercel.com)
-3. Add environment variable (optional for AI features):
+3. Configure build settings:
+   - **Framework Preset**: Vite
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. (Optional) Add environment variable for AI features:
    - `VITE_GEMINI_API_KEY`: Your Gemini API key
-4. Deploy!
+5. Deploy!
 
 ### Manual Build
 
@@ -76,12 +87,17 @@ The output will be in the `dist` folder.
 
 ### Basic Workflow
 1. Type or paste your Markdown in the left editor
-2. Select a theme from the toolbar
-3. Click "Export PDF" to download
+2. See real-time preview on the right
+3. Use "Auto Format" to clean up spacing
+4. Click "Download PDF" to export
 
 ### File Upload
-- Click "Upload .md" to import an existing Markdown file
+- Click the upload icon to import an existing Markdown file
 - Supported formats: `.md`, `.markdown`, `.txt`
+
+### Resizable Panes
+- Drag the divider between editor and preview to resize
+- On mobile, use the Editor/Preview toggle buttons
 
 ### YAML Front Matter
 Add metadata to your document:
@@ -89,37 +105,30 @@ Add metadata to your document:
 ---
 title: My Document
 author: John Doe
-theme: TECHNICAL_REPORT
 ---
 
 # Your content here...
 ```
 
-### AI Assistant
-1. Click "AI Assistant" to open the panel
-2. **Adjust Style**: "Make headings larger", "Use serif fonts"
-3. **Improve Content**: "Fix grammar", "Make more professional"
-
 ## Tech Stack
 
 - **Framework**: React 19 + TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
+- **Build Tool**: Vite 6
+- **Styling**: Tailwind CSS 3.4
 - **Markdown**: markdown-it + highlight.js
 - **PDF Generation**: html2canvas + jsPDF
-- **AI**: Google Gemini API
+- **AI** (optional): Google Gemini API
 
 ## Project Structure
 
 ```
-markflow-ai/
+markflow/
 ├── components/
-│   ├── AIPanel.tsx      # AI assistant sidebar
 │   ├── Editor.tsx       # Markdown input editor
 │   ├── Preview.tsx      # PDF preview pane
-│   └── Toolbar.tsx      # Theme selector & actions
+│   └── Toolbar.tsx      # Header with actions
 ├── services/
-│   ├── geminiService.ts # AI integration
+│   ├── geminiService.ts # AI integration (optional)
 │   └── markdownService.ts # Markdown parsing
 ├── App.tsx              # Main application
 ├── types.ts             # TypeScript definitions

@@ -30,7 +30,7 @@ export const Editor: React.FC<EditorProps> = ({ value, onChange }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-slate-200">
+    <div className="flex flex-col h-full w-full bg-white border-r border-slate-200">
       <div className="p-2 sm:p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
         <h2 className="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-wider">Markdown</h2>
         <div className="flex items-center gap-3">
