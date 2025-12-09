@@ -116,7 +116,7 @@ author: John Doe
 - **Build Tool**: Vite 6
 - **Styling**: Tailwind CSS 3.4
 - **Markdown**: markdown-it + highlight.js
-- **PDF Generation**: html2canvas + jsPDF
+- **PDF Generation**: Browser native print-to-PDF (no external libraries)
 - **AI** (optional): Google Gemini API
 
 ## Project Structure

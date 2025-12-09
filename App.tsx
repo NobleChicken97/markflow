@@ -4,8 +4,6 @@ import { Preview } from './components/Preview';
 import { Toolbar } from './components/Toolbar';
 import { parseMarkdown, extractFrontMatter } from './services/markdownService';
 import { AppTheme, INITIAL_MARKDOWN, DocumentState } from './types';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 
 function App() {
   const [docState, setDocState] = useState<DocumentState>({
@@ -127,7 +125,7 @@ function App() {
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
 
-  // Handler: Export PDF - Uses multiple A4 pages if content is long
+  // Handler: Export PDF - Uses browser print for best quality
   const handleExport = async () => {
     const element = document.getElementById('printable-content');
     if (!element) {
@@ -138,7 +136,15 @@ function App() {
     setDocState(prev => ({ ...prev, isGenerating: true }));
     
     try {
-      // Get computed styles to copy them
+      // Create a new window for printing
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      if (!printWindow) {
+        alert('Please allow pop-ups to download PDF');
+        setDocState(prev => ({ ...prev, isGenerating: false }));
+        return;
+      }
+
+      // Get all styles from the page
       const styleSheets = Array.from(document.styleSheets);
       let cssText = '';
       styleSheets.forEach(sheet => {
@@ -152,122 +158,124 @@ function App() {
         }
       });
 
-      // Create a wrapper div for proper rendering
-      const wrapper = document.createElement('div');
-      wrapper.style.position = 'absolute';
-      wrapper.style.left = '-9999px';
-      wrapper.style.top = '0';
-      wrapper.style.width = '794px'; // A4 width at 96 DPI
-      wrapper.style.backgroundColor = '#F2F4F3';
-      
-      // Add styles
-      const styleEl = document.createElement('style');
-      styleEl.textContent = cssText;
-      wrapper.appendChild(styleEl);
-      
-      // Clone the content
-      const clone = element.cloneNode(true) as HTMLElement;
-      clone.style.width = '794px';
-      clone.style.minHeight = 'auto';
-      clone.style.height = 'auto';
-      clone.style.boxShadow = 'none';
-      clone.style.margin = '0';
-      clone.style.padding = '40px';
-      wrapper.appendChild(clone);
-      
-      document.body.appendChild(wrapper);
+      // Build the print document
+      const printContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>${docState.title || 'Document'}</title>
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+          <style>
+            ${cssText}
+            
+            @page {
+              size: A4;
+              margin: 15mm;
+            }
+            
+            @media print {
+              * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+              }
+              
+              body {
+                margin: 0;
+                padding: 0;
+                background: white !important;
+              }
+              
+              .markdown-preview {
+                width: 100% !important;
+                max-width: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+                background: white !important;
+              }
+              
+              /* Page break controls */
+              h1, h2, h3, h4, h5, h6 {
+                page-break-after: avoid;
+                break-after: avoid;
+              }
+              
+              p, li, blockquote, pre {
+                page-break-inside: avoid;
+                break-inside: avoid;
+                orphans: 3;
+                widows: 3;
+              }
+              
+              table {
+                page-break-inside: auto;
+              }
+              
+              tr {
+                page-break-inside: avoid;
+                break-inside: avoid;
+              }
+              
+              thead {
+                display: table-header-group;
+              }
+              
+              img {
+                page-break-inside: avoid;
+                break-inside: avoid;
+                max-width: 100% !important;
+              }
+              
+              /* Ensure code blocks don't break awkwardly */
+              pre {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+              }
+            }
+            
+            body {
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+              margin: 0;
+              padding: 20px;
+              background: white;
+            }
+            
+            .markdown-preview {
+              max-width: 100%;
+              margin: 0 auto;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="markdown-preview">
+            ${element.innerHTML}
+          </div>
+          <script>
+            // Auto-trigger print dialog when loaded
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+                // Close window after print dialog closes
+                window.onafterprint = function() {
+                  window.close();
+                };
+                // Fallback: close after delay if onafterprint not supported
+                setTimeout(function() {
+                  window.close();
+                }, 1000);
+              }, 500);
+            };
+          </script>
+        </body>
+        </html>
+      `;
 
-      // Wait for rendering
-      await new Promise(resolve => setTimeout(resolve, 500));
+      printWindow.document.write(printContent);
+      printWindow.document.close();
 
-      // Use lower scale to avoid canvas size limits
-      const canvas = await html2canvas(clone, {
-        scale: 1.5,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#F2F4F3',
-        allowTaint: true,
-      });
-
-      document.body.removeChild(wrapper);
-
-      // A4 dimensions in mm
-      const pdfWidth = 210;
-      const pdfHeight = 297;
-      
-      // Calculate image dimensions
-      const imgWidth = pdfWidth;
-      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      // Check if content fits on one page or needs multiple
-      if (imgHeight <= pdfHeight) {
-        // Single page - content fits
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4',
-        });
-
-        pdf.addImage(
-          canvas.toDataURL('image/jpeg', 0.95),
-          'JPEG',
-          0,
-          0,
-          imgWidth,
-          imgHeight
-        );
-
-        const filename = `${docState.title.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'document'}.pdf`;
-        pdf.save(filename);
-      } else {
-        // Multiple pages needed
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4',
-        });
-
-        const totalPages = Math.ceil(imgHeight / pdfHeight);
-        const sourceHeight = canvas.height / totalPages;
-
-        for (let page = 0; page < totalPages; page++) {
-          if (page > 0) {
-            pdf.addPage();
-          }
-
-          // Create canvas for this page
-          const pageCanvas = document.createElement('canvas');
-          pageCanvas.width = canvas.width;
-          pageCanvas.height = Math.min(sourceHeight, canvas.height - page * sourceHeight);
-
-          const ctx = pageCanvas.getContext('2d');
-          if (ctx) {
-            ctx.fillStyle = '#F2F4F3';
-            ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-            ctx.drawImage(
-              canvas,
-              0, page * sourceHeight,
-              canvas.width, pageCanvas.height,
-              0, 0,
-              pageCanvas.width, pageCanvas.height
-            );
-          }
-
-          const pageImgHeight = (pageCanvas.height * pdfWidth) / pageCanvas.width;
-
-          pdf.addImage(
-            pageCanvas.toDataURL('image/jpeg', 0.95),
-            'JPEG',
-            0,
-            0,
-            pdfWidth,
-            Math.min(pageImgHeight, pdfHeight)
-          );
-        }
-
-        const filename = `${docState.title.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'document'}.pdf`;
-        pdf.save(filename);
-      }
     } catch (error) {
       console.error('PDF generation failed:', error);
       alert('Failed to generate PDF. Please try again.');

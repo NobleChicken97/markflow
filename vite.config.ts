@@ -25,7 +25,6 @@ export default defineConfig(({ mode }) => {
         rollupOptions: {
           output: {
             manualChunks: {
-              'pdf-libs': ['html2canvas', 'jspdf'],
               'markdown': ['markdown-it', 'highlight.js'],
               'react-vendor': ['react', 'react-dom'],
             }
