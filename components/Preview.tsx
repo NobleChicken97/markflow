@@ -313,11 +313,46 @@ export const Preview: React.FC<PreviewProps> = ({ html, customCss }) => {
         margin: 0.875rem 0;
         border: 2px solid #0A0908;
       }
+      
+      /* ==================== MOBILE RESPONSIVE ==================== */
+      @media (max-width: 768px) {
+        .markdown-preview {
+          padding: 20px;
+          font-size: 14px;
+        }
+        
+        .markdown-preview h1 {
+          font-size: 1.35rem;
+          padding: 0.625rem 1rem;
+        }
+        
+        .markdown-preview h2 {
+          font-size: 1.1rem;
+          padding: 0.5rem 0.75rem;
+        }
+        
+        .markdown-preview h3 {
+          font-size: 1rem;
+        }
+        
+        .markdown-preview pre {
+          padding: 0.625rem;
+          font-size: 0.7rem;
+        }
+        
+        .markdown-preview table {
+          font-size: 0.75rem;
+        }
+        
+        .markdown-preview th, .markdown-preview td {
+          padding: 0.375rem 0.5rem;
+        }
+      }
     `;
   };
 
   return (
-    <div className="h-full overflow-auto p-4" style={{ backgroundColor: '#A9927D' }}>
+    <div className="h-full w-full overflow-auto p-2 sm:p-4" style={{ backgroundColor: '#A9927D' }}>
       <style>{getStyles()}</style>
       <style>{customCss}</style>
       
@@ -326,7 +361,7 @@ export const Preview: React.FC<PreviewProps> = ({ html, customCss }) => {
         <div 
           id="printable-content"
           className="markdown-preview shadow-xl w-full max-w-[210mm]"
-          style={{ minHeight: '297mm', backgroundColor: '#F2F4F3', border: '3px solid #0A0908' }}
+          style={{ minHeight: 'auto', backgroundColor: '#F2F4F3', border: '3px solid #0A0908' }}
           dangerouslySetInnerHTML={{ __html: html }}
         />
       </div>

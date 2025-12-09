@@ -31,8 +31,8 @@ export const Editor: React.FC<EditorProps> = ({ value, onChange }) => {
 
   return (
     <div className="flex flex-col h-full bg-white border-r border-slate-200">
-      <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-        <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Markdown Input</h2>
+      <div className="p-2 sm:p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+        <h2 className="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-wider">Markdown</h2>
         <div className="flex items-center gap-3">
           <input
             ref={fileInputRef}
@@ -47,16 +47,15 @@ export const Editor: React.FC<EditorProps> = ({ value, onChange }) => {
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-md cursor-pointer transition-colors border border-slate-200"
           >
             <ArrowUpTrayIcon className="w-4 h-4" />
-            Upload .md
+            <span className="hidden sm:inline">Upload .md</span>
           </label>
-          <span className="text-xs text-slate-400">Auto-saving...</span>
         </div>
       </div>
       <textarea
-        className="flex-1 w-full p-6 resize-none outline-none font-mono text-sm text-slate-800 leading-relaxed"
+        className="flex-1 w-full p-3 sm:p-6 resize-none outline-none font-mono text-xs sm:text-sm text-slate-800 leading-relaxed"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="# Start typing your document here..."
+        placeholder="# Start typing your markdown here..."
         spellCheck={false}
       />
     </div>

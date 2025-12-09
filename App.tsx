@@ -22,6 +22,9 @@ function App() {
   const [splitPosition, setSplitPosition] = useState(50); // percentage
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Mobile view toggle: 'editor' or 'preview'
+  const [mobileView, setMobileView] = useState<'editor' | 'preview'>('editor');
 
   // Force re-render for PDF generation
   const [, forceUpdate] = useState({});
@@ -281,11 +284,39 @@ function App() {
         isGenerating={docState.isGenerating}
       />
 
+      {/* Mobile View Toggle - Only visible on small screens */}
+      <div className="md:hidden flex border-b" style={{ backgroundColor: '#F2F4F3' }}>
+        <button
+          onClick={() => setMobileView('editor')}
+          className={`flex-1 py-2 text-sm font-medium transition-colors ${
+            mobileView === 'editor' 
+              ? 'text-white' 
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+          style={mobileView === 'editor' ? { backgroundColor: '#5E503F' } : {}}
+        >
+          ✏️ Editor
+        </button>
+        <button
+          onClick={() => setMobileView('preview')}
+          className={`flex-1 py-2 text-sm font-medium transition-colors ${
+            mobileView === 'preview' 
+              ? 'text-white' 
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+          style={mobileView === 'preview' ? { backgroundColor: '#5E503F' } : {}}
+        >
+          👁️ Preview
+        </button>
+      </div>
+
       <main ref={containerRef} className="flex-1 flex min-h-0 overflow-hidden relative">
-        {/* Editor Pane - Hidden when printing */}
+        {/* Editor Pane - Full width on mobile when active, side-by-side on desktop */}
         <div 
-          className="h-full overflow-hidden print:hidden"
-          style={{ width: `${splitPosition}%` }}
+          className={`h-full overflow-hidden print:hidden
+            ${mobileView === 'editor' ? 'flex' : 'hidden'} 
+            md:flex`}
+          style={{ width: window.innerWidth >= 768 ? `${splitPosition}%` : '100%' }}
         >
           <Editor 
             value={docState.rawMarkdown} 
@@ -293,19 +324,21 @@ function App() {
           />
         </div>
 
-        {/* Resizable Divider */}
+        {/* Resizable Divider - Hidden on mobile */}
         <div
-          className="w-2 h-full cursor-col-resize flex items-center justify-center group print:hidden hover:bg-[#A9927D] transition-colors"
+          className="hidden md:flex w-2 h-full cursor-col-resize items-center justify-center group print:hidden hover:bg-[#A9927D] transition-colors"
           style={{ backgroundColor: '#22333B' }}
           onMouseDown={handleMouseDown}
         >
           <div className="w-0.5 h-8 rounded-full bg-[#A9927D] group-hover:bg-[#F2F4F3] transition-colors" />
         </div>
 
-        {/* Preview Pane - Full width when printing */}
+        {/* Preview Pane - Full width on mobile when active, side-by-side on desktop */}
         <div 
-          className="h-full overflow-hidden print:w-full print:border-none print:overflow-visible"
-          style={{ width: `${100 - splitPosition}%` }}
+          className={`h-full overflow-hidden print:w-full print:border-none print:overflow-visible
+            ${mobileView === 'preview' ? 'flex' : 'hidden'} 
+            md:flex`}
+          style={{ width: window.innerWidth >= 768 ? `${100 - splitPosition}%` : '100%' }}
         >
           <Preview 
             html={docState.processedHtml} 
