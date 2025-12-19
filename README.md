@@ -1,6 +1,6 @@
 # MarkFlow - Markdown to PDF Converter
 
-A sleek, responsive web application that converts Markdown content into beautifully styled, print-ready PDFs.
+A sleek, responsive web application that converts Markdown content into beautifully styled, print-ready PDFs with comprehensive markdown support.
 
 🌐 **Live Demo**: [markflow.vercel.app](https://markflow.vercel.app)
 
@@ -12,6 +12,19 @@ A sleek, responsive web application that converts Markdown content into beautifu
 - Export to high-quality downloadable PDF
 - Auto-format button to clean up markdown formatting
 - YAML front-matter support for document metadata
+
+📝 **Extended Markdown Support**
+- **Math/LaTeX**: Inline `$E=mc^2$` and block `$$\sum_{i=1}^n x_i$$` equations (KaTeX)
+- **Task Lists**: `- [x] Done` / `- [ ] Todo` checkboxes
+- **Footnotes**: `[^1]` references with automatic numbering
+- **Highlight**: `==marked text==` for highlighting
+- **Sub/Superscript**: `H~2~O` and `x^2^`
+- **Emoji**: `:smile:` `:heart:` and more
+- **Definition Lists**: Term/definition pairs
+- **Abbreviations**: `*[HTML]: HyperText Markup Language`
+- **Table of Contents**: `[[toc]]` auto-generates TOC
+- **Custom Containers**: `:::tip`, `:::warning`, `:::danger`, `:::info`
+- **Collapsible Sections**: `:::details Title` for expandable content
 
 🎨 **Professional Styling**
 - Clean, modern design with custom color palette
@@ -60,6 +73,80 @@ A sleek, responsive web application that converts Markdown content into beautifu
    ```
 
 4. Open http://localhost:3000 in your browser
+
+## Markdown Syntax Reference
+
+### Math Equations (LaTeX)
+```markdown
+Inline: $E = mc^2$
+Block:
+$$
+\\sum_{i=1}^{n} x_i = x_1 + x_2 + ... + x_n
+$$
+```
+
+### Task Lists
+```markdown
+- [x] Completed task
+- [ ] Pending task
+```
+
+### Footnotes
+```markdown
+Here is a footnote reference[^1].
+
+[^1]: This is the footnote content.
+```
+
+### Highlighting & Formatting
+```markdown
+==highlighted text==
+H~2~O (subscript)
+x^2^ (superscript)
+:smile: :heart: (emoji)
+```
+
+### Definition Lists
+```markdown
+Term
+: Definition of the term
+```
+
+### Abbreviations
+```markdown
+The HTML specification is maintained by the W3C.
+
+*[HTML]: Hyper Text Markup Language
+*[W3C]: World Wide Web Consortium
+```
+
+### Table of Contents
+```markdown
+[[toc]]
+```
+
+### Custom Containers
+```markdown
+::: tip Pro Tip
+Helpful information here
+:::
+
+::: warning
+Be careful about this
+:::
+
+::: danger
+Critical warning!
+:::
+
+::: info
+Additional information
+:::
+
+::: details Click to expand
+Hidden content revealed on click
+:::
+```
 
 ## Deployment to Vercel
 
@@ -115,8 +202,19 @@ author: John Doe
 - **Framework**: React 19 + TypeScript
 - **Build Tool**: Vite 6
 - **Styling**: Tailwind CSS 3.4
-- **Markdown**: markdown-it + highlight.js
-- **PDF Generation**: Browser native print-to-PDF (no external libraries)
+- **Markdown**: markdown-it with plugins:
+  - `@mdit/plugin-katex` - Math/LaTeX equations
+  - `markdown-it-task-lists` - Checkboxes
+  - `markdown-it-footnote` - Footnotes
+  - `markdown-it-mark` - Highlights
+  - `markdown-it-sub/sup` - Subscript/Superscript
+  - `markdown-it-emoji` - Emoji support
+  - `markdown-it-container` - Custom containers
+  - `markdown-it-deflist` - Definition lists
+  - `markdown-it-abbr` - Abbreviations
+  - `markdown-it-toc-done-right` - Table of Contents
+- **Code Highlighting**: highlight.js
+- **PDF Generation**: Browser native print-to-PDF
 - **AI** (optional): Google Gemini API
 
 ## Project Structure

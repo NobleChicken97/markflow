@@ -1,5 +1,6 @@
 {
   "name": "MarkFlow AI",
-  "description": "A professional Markdown to PDF converter with AI-assisted styling, theme detection, and content polishing using Google Gemini 2.5 Flash.",
+  "description": "A professional Markdown to PDF converter with comprehensive markdown support including LaTeX math, task lists, footnotes, custom containers, and AI-assisted styling using Google Gemini.",
+  "keywords": ["markdown", "pdf", "converter", "latex", "math", "katex", "react", "vite"],
   "requestFramePermissions": []
 }

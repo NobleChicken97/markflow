@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Editor } from './components/Editor';
-import { Preview } from './components/Preview';
+import { Preview, getMarkdownStyles } from './components/Preview';
 import { Toolbar } from './components/Toolbar';
 import { parseMarkdown, extractFrontMatter } from './services/markdownService';
 import { AppTheme, INITIAL_MARKDOWN, DocumentState } from './types';
@@ -133,6 +133,15 @@ function App() {
       return;
     }
 
+    // Verify content exists
+    const contentHtml = element.innerHTML;
+    if (!contentHtml || contentHtml.trim().length === 0) {
+      alert('No content to export. Please add some markdown first.');
+      return;
+    }
+
+    console.log('[PDF Export] Content length:', contentHtml.length);
+
     setDocState(prev => ({ ...prev, isGenerating: true }));
     
     try {
@@ -144,57 +153,67 @@ function App() {
         return;
       }
 
-      // Get all styles from the page
-      const styleSheets = Array.from(document.styleSheets);
-      let cssText = '';
-      styleSheets.forEach(sheet => {
-        try {
-          const rules = Array.from(sheet.cssRules || []);
-          rules.forEach(rule => {
-            cssText += rule.cssText + '\n';
-          });
-        } catch (e) {
-          // Skip cross-origin stylesheets
-        }
-      });
+      // Get the markdown styles directly from the exported function
+      const markdownStyles = getMarkdownStyles();
 
-      // Build the print document
+      // Build the print document with explicit styles
       const printContent = `
         <!DOCTYPE html>
         <html>
         <head>
           <meta charset="UTF-8">
           <title>${docState.title || 'Document'}</title>
-          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+          <!-- KaTeX CSS for math equations -->
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
           <style>
-            ${cssText}
+            /* Import fonts directly in style block for reliability */
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+            
+            /* Markdown Preview Styles - directly included */
+            ${markdownStyles}
             
             @page {
               size: A4;
               margin: 15mm;
             }
             
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
+            
+            html, body {
+              margin: 0;
+              padding: 0;
+              background: white !important;
+              width: 100%;
+              height: auto;
+            }
+            
+            body {
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+              padding: 0;
+            }
+            
+            .markdown-preview {
+              width: 100% !important;
+              max-width: none !important;
+              padding: 40px !important;
+              margin: 0 !important;
+              border: none !important;
+              box-shadow: none !important;
+              background: white !important;
+            }
+            
             @media print {
-              * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                color-adjust: exact !important;
-              }
-              
               body {
                 margin: 0;
                 padding: 0;
-                background: white !important;
               }
               
               .markdown-preview {
-                width: 100% !important;
-                max-width: none !important;
                 padding: 0 !important;
-                margin: 0 !important;
-                border: none !important;
-                box-shadow: none !important;
-                background: white !important;
               }
               
               /* Page break controls */
@@ -229,45 +248,47 @@ function App() {
                 max-width: 100% !important;
               }
               
-              /* Ensure code blocks don't break awkwardly */
               pre {
                 white-space: pre-wrap;
                 word-wrap: break-word;
               }
             }
-            
-            body {
-              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-              margin: 0;
-              padding: 20px;
-              background: white;
-            }
-            
-            .markdown-preview {
-              max-width: 100%;
-              margin: 0 auto;
-            }
           </style>
         </head>
         <body>
           <div class="markdown-preview">
-            ${element.innerHTML}
+            ${contentHtml}
           </div>
           <script>
-            // Auto-trigger print dialog when loaded
-            window.onload = function() {
+            // Wait for fonts to load, then print
+            function triggerPrint() {
+              console.log('[PDF Export] Triggering print dialog');
+              window.print();
+              window.onafterprint = function() {
+                window.close();
+              };
+              // Fallback: close after delay if onafterprint not supported
               setTimeout(function() {
-                window.print();
-                // Close window after print dialog closes
-                window.onafterprint = function() {
-                  window.close();
-                };
-                // Fallback: close after delay if onafterprint not supported
-                setTimeout(function() {
-                  window.close();
-                }, 1000);
-              }, 500);
-            };
+                window.close();
+              }, 2000);
+            }
+            
+            // Use document.fonts.ready for reliable font loading
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(function() {
+                console.log('[PDF Export] Fonts loaded via fonts.ready');
+                setTimeout(triggerPrint, 100);
+              }).catch(function() {
+                console.log('[PDF Export] Fonts.ready failed, using fallback');
+                setTimeout(triggerPrint, 1000);
+              });
+            } else {
+              // Fallback for browsers without document.fonts
+              window.onload = function() {
+                console.log('[PDF Export] Using window.onload fallback');
+                setTimeout(triggerPrint, 800);
+              };
+            }
           </script>
         </body>
         </html>

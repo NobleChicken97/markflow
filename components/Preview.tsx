@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppTheme } from '../types';
+import 'katex/dist/katex.min.css';
 
 interface PreviewProps {
   html: string;
@@ -14,9 +15,9 @@ interface PreviewProps {
 // #A9927D - Tan/Khaki (accents, highlights)
 // #5E503F - Brown (secondary headers, accents)
 
-export const Preview: React.FC<PreviewProps> = ({ html, customCss }) => {
-  const getStyles = () => {
-    return `
+// Exported for use in PDF generation
+export const getMarkdownStyles = (): string => {
+  return `
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
       
       .markdown-preview {
@@ -314,6 +315,282 @@ export const Preview: React.FC<PreviewProps> = ({ html, customCss }) => {
         border: 2px solid #0A0908;
       }
       
+      /* ==================== MATH/LATEX (KaTeX) ==================== */
+      
+      .markdown-preview .katex {
+        font-size: 1.1em;
+      }
+      
+      .markdown-preview .katex-display {
+        margin: 1rem 0;
+        padding: 1rem;
+        background: #ffffff;
+        border: 2px solid #0A0908;
+        border-left-width: 5px;
+        border-left-color: #5E503F;
+        overflow-x: auto;
+      }
+      
+      .markdown-preview .katex-display > .katex {
+        text-align: center;
+      }
+      
+      .markdown-preview p > .katex {
+        background: #F2F4F3;
+        padding: 0.1rem 0.3rem;
+        border-radius: 2px;
+      }
+      
+      /* ==================== TASK LISTS (Checkboxes) ==================== */
+      
+      .markdown-preview .task-list-item {
+        list-style: none;
+        position: relative;
+        padding-left: 0.5rem;
+      }
+      
+      .markdown-preview .task-list-item::before {
+        content: none;
+      }
+      
+      .markdown-preview .task-list-item input[type="checkbox"] {
+        margin-right: 0.5rem;
+        width: 1rem;
+        height: 1rem;
+        accent-color: #5E503F;
+      }
+      
+      .markdown-preview .task-list-item.checked {
+        text-decoration: line-through;
+        opacity: 0.7;
+      }
+      
+      /* ==================== FOOTNOTES ==================== */
+      
+      .markdown-preview .footnotes {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 3px solid #0A0908;
+        font-size: 0.85rem;
+      }
+      
+      .markdown-preview .footnotes-sep {
+        display: none;
+      }
+      
+      .markdown-preview .footnotes ol {
+        padding-left: 1.5rem;
+      }
+      
+      .markdown-preview .footnote-ref {
+        font-size: 0.75em;
+        vertical-align: super;
+        text-decoration: none;
+        background: #A9927D;
+        padding: 0 0.25rem;
+        border-radius: 2px;
+        color: #0A0908;
+        font-weight: 600;
+      }
+      
+      .markdown-preview .footnote-backref {
+        text-decoration: none;
+        margin-left: 0.25rem;
+      }
+      
+      /* ==================== MARK/HIGHLIGHT ==================== */
+      
+      .markdown-preview mark {
+        background: #A9927D;
+        color: #0A0908;
+        padding: 0.1rem 0.3rem;
+        border-radius: 2px;
+      }
+      
+      /* ==================== SUBSCRIPT & SUPERSCRIPT ==================== */
+      
+      .markdown-preview sub {
+        font-size: 0.75em;
+        vertical-align: sub;
+      }
+      
+      .markdown-preview sup {
+        font-size: 0.75em;
+        vertical-align: super;
+      }
+      
+      /* ==================== DEFINITION LISTS ==================== */
+      
+      .markdown-preview dl {
+        margin: 1rem 0;
+        padding: 0.75rem 1rem;
+        background: #ffffff;
+        border: 2px solid #0A0908;
+      }
+      
+      .markdown-preview dt {
+        font-weight: 700;
+        color: #22333B;
+        margin-top: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        background: #A9927D;
+        display: inline-block;
+      }
+      
+      .markdown-preview dt:first-child {
+        margin-top: 0;
+      }
+      
+      .markdown-preview dd {
+        margin: 0.25rem 0 0.5rem 1.5rem;
+        padding-left: 0.5rem;
+        border-left: 3px solid #5E503F;
+        color: #0A0908;
+      }
+      
+      /* ==================== ABBREVIATIONS ==================== */
+      
+      .markdown-preview abbr {
+        text-decoration: underline dotted;
+        cursor: help;
+        border-bottom: none;
+      }
+      
+      /* ==================== TABLE OF CONTENTS ==================== */
+      
+      .markdown-preview .table-of-contents {
+        margin: 1rem 0;
+        padding: 1rem;
+        background: #ffffff;
+        border: 2px solid #0A0908;
+        border-left-width: 5px;
+        border-left-color: #22333B;
+      }
+      
+      .markdown-preview .table-of-contents::before {
+        content: "Table of Contents";
+        display: block;
+        font-weight: 700;
+        color: #22333B;
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #A9927D;
+      }
+      
+      .markdown-preview .toc-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        border: none;
+        background: transparent;
+      }
+      
+      .markdown-preview .toc-list .toc-list {
+        margin-left: 1rem;
+        border: none;
+      }
+      
+      .markdown-preview .toc-item {
+        margin: 0.25rem 0;
+        padding: 0;
+        border: none;
+      }
+      
+      .markdown-preview .toc-item::before {
+        content: "•";
+        color: #5E503F;
+        margin-right: 0.5rem;
+      }
+      
+      .markdown-preview .toc-link {
+        text-decoration: none;
+        color: #22333B;
+      }
+      
+      .markdown-preview .toc-link:hover {
+        text-decoration: underline;
+        color: #5E503F;
+      }
+      
+      /* ==================== CUSTOM CONTAINERS ==================== */
+      
+      .markdown-preview .custom-container {
+        margin: 1rem 0;
+        padding: 1rem;
+        border: 2px solid #0A0908;
+        border-left-width: 5px;
+      }
+      
+      .markdown-preview .custom-container-title {
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        padding-bottom: 0.25rem;
+        border-bottom: 1px solid currentColor;
+      }
+      
+      .markdown-preview .custom-container.info {
+        background: #e8f4fd;
+        border-left-color: #3498db;
+      }
+      .markdown-preview .custom-container.info .custom-container-title {
+        color: #2980b9;
+      }
+      
+      .markdown-preview .custom-container.tip,
+      .markdown-preview .custom-container.success {
+        background: #e8f8e8;
+        border-left-color: #27ae60;
+      }
+      .markdown-preview .custom-container.tip .custom-container-title,
+      .markdown-preview .custom-container.success .custom-container-title {
+        color: #1e8449;
+      }
+      
+      .markdown-preview .custom-container.warning,
+      .markdown-preview .custom-container.note {
+        background: #fef9e7;
+        border-left-color: #f39c12;
+      }
+      .markdown-preview .custom-container.warning .custom-container-title,
+      .markdown-preview .custom-container.note .custom-container-title {
+        color: #d68910;
+      }
+      
+      .markdown-preview .custom-container.danger {
+        background: #fdedec;
+        border-left-color: #e74c3c;
+      }
+      .markdown-preview .custom-container.danger .custom-container-title {
+        color: #c0392b;
+      }
+      
+      /* ==================== DETAILS/SUMMARY (Collapsible) ==================== */
+      
+      .markdown-preview details {
+        margin: 1rem 0;
+        padding: 0.75rem 1rem;
+        background: #ffffff;
+        border: 2px solid #0A0908;
+      }
+      
+      .markdown-preview details summary {
+        font-weight: 600;
+        cursor: pointer;
+        color: #22333B;
+        padding: 0.25rem 0;
+        user-select: none;
+      }
+      
+      .markdown-preview details summary:hover {
+        color: #5E503F;
+      }
+      
+      .markdown-preview details[open] summary {
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #A9927D;
+      }
+      
       /* ==================== MOBILE RESPONSIVE ==================== */
       @media (max-width: 768px) {
         .markdown-preview {
@@ -349,11 +626,12 @@ export const Preview: React.FC<PreviewProps> = ({ html, customCss }) => {
         }
       }
     `;
-  };
+};
 
+export const Preview: React.FC<PreviewProps> = ({ html, customCss }) => {
   return (
     <div className="h-full w-full overflow-auto p-2 sm:p-4" style={{ backgroundColor: '#A9927D' }}>
-      <style>{getStyles()}</style>
+      <style>{getMarkdownStyles()}</style>
       <style>{customCss}</style>
       
       {/* Paper Simulation - Responsive */}

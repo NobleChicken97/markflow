@@ -22,10 +22,25 @@ export default defineConfig(({ mode }) => {
       build: {
         outDir: 'dist',
         sourcemap: false,
+        chunkSizeWarningLimit: 1000,
         rollupOptions: {
           output: {
             manualChunks: {
-              'markdown': ['markdown-it', 'highlight.js'],
+              'katex': ['katex', '@mdit/plugin-katex'],
+              'highlight': ['highlight.js'],
+              'markdown-core': ['markdown-it'],
+              'markdown-plugins': [
+                'markdown-it-task-lists',
+                'markdown-it-footnote',
+                'markdown-it-mark',
+                'markdown-it-sub',
+                'markdown-it-sup',
+                'markdown-it-emoji',
+                'markdown-it-container',
+                'markdown-it-deflist',
+                'markdown-it-abbr',
+                'markdown-it-toc-done-right'
+              ],
               'react-vendor': ['react', 'react-dom'],
             }
           }
